@@ -13,12 +13,12 @@ export function HeroSection() {
         分享链接，让朋友与&ldquo;你&rdquo;对话。
       </p>
       <div className="flex items-center justify-center gap-3 pt-2">
-        <Button variant="outline" asChild size="sm">
-          <Link href="/explore">
+        <Link href="/explore">
+          <Button variant="outline" size="sm">
             <Users className="size-3.5 mr-1" />
             试玩现成角色
-          </Link>
-        </Button>
+          </Button>
+        </Link>
         <span className="text-xs text-muted-foreground">或</span>
         <span className="flex items-center gap-1 text-xs text-muted-foreground">
           <Sparkles className="size-3" />

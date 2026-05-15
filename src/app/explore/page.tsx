@@ -49,9 +49,9 @@ export default function ExplorePage() {
                   </Badge>
                 ))}
               </div>
-              <Button asChild className="w-full" size="sm">
-                <Link href={`/chat/prebuilt/${p.slug}`}>开始对话</Link>
-              </Button>
+              <Link href={`/chat/prebuilt/${p.slug}`}>
+                <Button className="w-full" size="sm">开始对话</Button>
+              </Link>
             </CardContent>
           </Card>
         ))}

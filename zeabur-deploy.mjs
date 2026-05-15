@@ -5,6 +5,8 @@ import {
   getService, executeGraphql
 } from '@zeabur/ai-sdk';
 import { readFileSync, existsSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 
 const TOKEN = process.env.ZEABUR_TOKEN;
 
@@ -17,7 +19,8 @@ if (!TOKEN || TOKEN === 'your-zeabur-api-token') {
 const ctx = createZeaburContext(TOKEN);
 
 function loadEnvFile() {
-  const envPath = new URL('.env.local', import.meta.url).pathname;
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const envPath = resolve(__dirname, '.env.local');
   if (!existsSync(envPath)) {
     console.warn('Warning: .env.local not found, skipping env vars');
     return {};
@@ -37,16 +40,11 @@ function loadEnvFile() {
 }
 
 async function main() {
-  // ── 1. Select region (Hong Kong for China accessibility) ──
-  console.log('\n=== 1. Selecting Region ===');
-  const regionsData = JSON.parse(await executeGraphql({ query: '{ regions { code name } }' }, ctx));
-  console.log('Available regions:', regionsData.regions.map(r => `  ${r.code}: ${r.name}`).join('\n'));
-
-  // Prefer Hong Kong, then Tokyo, then Shanghai for China access
-  const preferred = ['hkg1', 'hnd1', 'sha1', 'tpe0'];
-  const regionCode = preferred.find(code => regionsData.regions.some(r => r.code === code)) || regionsData.regions[0].code;
-  const regionName = regionsData.regions.find(r => r.code === regionCode)?.name || regionCode;
-  console.log(`Selected: ${regionCode} (${regionName})`);
+  // ── 1. Use Singapore server (user-provided) ──
+  console.log('\n=== 1. Server ===');
+  const SERVER_ID = process.env.ZEABUR_SERVER_ID || '6a06ef406525bc96a5a76b70';
+  const regionCode = `server-${SERVER_ID}`;
+  console.log(`Using server: ${regionCode}`);
 
   // ── 2. Get GitHub repo ID ──
   console.log('\n=== 2. Finding GitHub Repo ===');
@@ -129,6 +127,7 @@ async function main() {
           type: 'GITHUB',
           github: { repo_id: repoId, ref: 'main' },
         },
+        dockerfile: { content: 'FROM node:20-alpine\nWORKDIR /app\nCOPY . .\nRUN npm ci && npm run build\nEXPOSE 3000\nCMD ["npm", "start"]' },
       },
     },
     env: [],

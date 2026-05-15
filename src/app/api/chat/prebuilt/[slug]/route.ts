@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase/server'
 import { callDeepSeek } from '@/lib/deepseek/client'
 import { buildChatMessages } from '@/lib/deepseek/chat-prompt'
 import { normalizeProfile } from '@/types/persona'
-import type { PersonaProfile } from '@/types/persona'
+import { getPrebuiltPersona } from '@/data/prebuilt-personas'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
-    const { id } = await params
+    const { slug } = await params
     const body = await request.json()
     const userMessage: string = body.message?.trim()
     const history: { role: 'user' | 'assistant'; content: string }[] = body.history ?? []
@@ -22,20 +21,15 @@ export async function POST(
       )
     }
 
-    const { data: persona, error } = await supabaseAdmin
-      .from('personas')
-      .select('*')
-      .eq('id', id)
-      .single()
-
-    if (error || !persona) {
+    const persona = getPrebuiltPersona(slug)
+    if (!persona) {
       return NextResponse.json(
         { ok: false, error: '人格不存在' },
         { status: 404 },
       )
     }
 
-    const profile = normalizeProfile(persona.persona_profile as Partial<PersonaProfile>)
+    const profile = normalizeProfile(persona.profile)
 
     const messages = [
       ...buildChatMessages(persona.name, profile, persona.bio, history),
@@ -47,14 +41,9 @@ export async function POST(
       max_tokens: 1024,
     })
 
-    void supabaseAdmin
-      .from('personas')
-      .update({ chat_count: (persona.chat_count ?? 0) + 1 })
-      .eq('id', id)
-
     return NextResponse.json({ ok: true, data: { reply } })
   } catch (err) {
-    console.error('POST /api/chat/[id] error:', err)
+    console.error('POST /api/chat/prebuilt/[slug] error:', err)
     return NextResponse.json(
       { ok: false, error: err instanceof Error ? err.message : '服务器内部错误' },
       { status: 500 },

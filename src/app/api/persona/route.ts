@@ -44,10 +44,10 @@ export async function POST(request: NextRequest) {
       { temperature: 0.8, max_tokens: 4096, jsonMode: true },
     )
 
-    let profile: PersonaProfile
+    let extracted: Record<string, unknown>
     try {
-      profile = JSON.parse(rawResponse)
-      if (!profile.tone || !profile.personality_traits || !profile.samples) {
+      extracted = JSON.parse(rawResponse)
+      if (!extracted.identity || !extracted.rules || !extracted.conversation_samples) {
         throw new Error('Missing required fields')
       }
     } catch {
@@ -57,10 +57,34 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // 构建完整的 PersonaProfile（五层结构 + 遗留字段兼容）
+    const identity = (extracted.identity as string) || ''
+    const rules = (extracted.rules as string[]) || []
+    const expressionStyle = (extracted.expression_style as string) || ''
+    const decisionPatterns = (extracted.decision_patterns as string[]) || []
+    const conversationSamples = (extracted.conversation_samples as { q: string; a: string }[]) || []
+
+    const profile: PersonaProfile = {
+      identity,
+      rules,
+      expression_style: expressionStyle,
+      decision_patterns: decisionPatterns,
+      conversation_samples: conversationSamples,
+      // 向后兼容字段
+      tone: identity.split('。')[0] || '未知',
+      vocabulary_level: expressionStyle.includes('白话') ? '口语化' : expressionStyle.includes('书面') ? '书面化' : '日常',
+      common_phrases: [],
+      style_notes: expressionStyle,
+      personality_traits: decisionPatterns,
+      topics: [],
+      samples: conversationSamples,
+    }
+
     const finalName = personaName || '未知人格'
 
-    const bio = profile.personality_traits
-      ? `一个${profile.tone}的聊天者，喜欢讨论${(profile.topics || []).slice(0, 3).join('、')}。性格特征：${profile.personality_traits.slice(0, 3).join('、')}。`
+    const traits = profile.personality_traits.slice(0, 3).join('、')
+    const bio = traits
+      ? `${identity.split('。')[0]}。性格特征：${traits}。`
       : ''
 
     const { data, error } = await supabaseAdmin

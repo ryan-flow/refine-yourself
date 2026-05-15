@@ -53,8 +53,13 @@ export function ChatInterface({ persona }: ChatInterfaceProps) {
         content: m.content,
       }))
 
+      const isPrebuilt = persona.id.startsWith('prebuilt-')
+      const chatApi = isPrebuilt
+        ? `/api/chat/prebuilt/${persona.id.replace('prebuilt-', '')}`
+        : `/api/chat/${persona.id}`
+
       try {
-        const res = await fetch(`/api/chat/${persona.id}`, {
+        const res = await fetch(chatApi, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: text, history }),

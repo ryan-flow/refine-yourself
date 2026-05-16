@@ -111,6 +111,8 @@ export default function HomePage() {
               shareUrl={result.shareUrl}
               adminToken={result.persona.admin_token}
               personaId={result.persona.id}
+              personaName={result.persona.name}
+              personaBio={result.persona.bio}
             />
             <Button variant="ghost" className="w-full text-xs" onClick={handleReset}>
               重新开始

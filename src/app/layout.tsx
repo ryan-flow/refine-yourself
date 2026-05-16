@@ -17,6 +17,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "炼化自己 — 从聊天记录中提炼数字分身",
   description: "上传聊天记录，AI 自动提炼人格画像，生成可分享的数字分身。",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://refineyourself.asia'),
+  openGraph: {
+    siteName: '炼化自己',
+    title: '炼化自己 — 从聊天记录中提炼数字分身',
+    description: '上传聊天记录，AI 自动提炼人格画像，生成可分享的数字分身。',
+    type: 'website',
+    locale: 'zh_CN',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '炼化自己 — 从聊天记录中提炼数字分身',
+    description: '上传聊天记录，AI 自动提炼人格画像，生成可分享的数字分身。',
+  },
 };
 
 export default function RootLayout({

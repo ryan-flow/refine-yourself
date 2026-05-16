@@ -6,6 +6,7 @@ import { ChatMessageBubble } from './chat-message'
 import { ChatInput } from './chat-input'
 import { TypingIndicator } from './typing-indicator'
 import { EmptyState } from './empty-state'
+import { ShareModal } from '../shared/share-modal'
 import { Toaster, toast } from 'sonner'
 import {
   saveConversation,
@@ -22,7 +23,18 @@ interface ChatInterfaceProps {
 export function ChatInterface({ persona }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [showShare, setShowShare] = useState(false)
+  const [shareUrl, setShareUrl] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setShareUrl(window.location.href)
+  }, [])
+
+  // 推断 persona 主题
+  const personaTheme = persona.id.startsWith('prebuilt-')
+    ? persona.id.replace('prebuilt-', '')
+    : 'default'
 
   useEffect(() => {
     const saved = loadConversation(persona.id)
@@ -98,12 +110,23 @@ export function ChatInterface({ persona }: ChatInterfaceProps) {
     [messages, persona.id],
   )
 
+  // 对话样本：优先用真实对话，否则用人设样本
+  const profile = persona.persona_profile as Record<string, unknown> | null
+  const presetSamples = (profile?.conversation_samples || profile?.samples || []) as { q: string; a: string }[]
+  const chatSamples = messages.length >= 2
+    ? messages.filter(m => m.role === 'user').slice(0, 2).map(m => {
+        const reply = messages.find(r => r.role === 'assistant' && r.timestamp > m.timestamp)
+        return { q: m.content, a: reply?.content || '...' }
+      })
+    : presetSamples
+
   return (
     <div className="flex flex-1 flex-col">
       <PersonaHeader
         name={persona.name}
         bio={persona.bio}
         profile={persona.persona_profile}
+        onShare={() => setShowShare(true)}
       />
 
       <div className="flex flex-1 flex-col overflow-y-auto">
@@ -133,6 +156,16 @@ export function ChatInterface({ persona }: ChatInterfaceProps) {
 
       <ChatInput onSend={handleSend} disabled={isLoading} />
       <Toaster position="top-center" richColors />
+
+      <ShareModal
+        open={showShare}
+        onClose={() => setShowShare(false)}
+        personaName={persona.name}
+        personaBio={persona.bio}
+        shareUrl={shareUrl}
+        samples={chatSamples}
+        theme={personaTheme}
+      />
     </div>
   )
 }

@@ -10,19 +10,25 @@ interface PersonaHeaderProps {
   name: string
   bio: string
   profile: PersonaProfile
+  onShare?: () => void
 }
 
-export function PersonaHeader({ name, bio, profile }: PersonaHeaderProps) {
+export function PersonaHeader({ name, bio, profile, onShare }: PersonaHeaderProps) {
   const [showDetails, setShowDetails] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const handleShare = useCallback(() => {
-    const url = window.location.href
-    navigator.clipboard.writeText(url).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
-  }, [])
+    if (onShare) {
+      onShare()
+    } else {
+      // 兜底：复制链接
+      const url = window.location.href
+      navigator.clipboard.writeText(url).then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      })
+    }
+  }, [onShare])
 
   return (
     <div className="border-b bg-background">

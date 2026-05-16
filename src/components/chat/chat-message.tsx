@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 interface ChatMessageProps {
   message: ChatMessage
   personaName: string
+  index?: number
 }
 
 function formatTime(iso: string) {
@@ -20,11 +21,11 @@ function formatTime(iso: string) {
   return `${d.getMonth() + 1}/${d.getDate()} ${time}`
 }
 
-export function ChatMessageBubble({ message, personaName }: ChatMessageProps) {
+export function ChatMessageBubble({ message, personaName, index = 0 }: ChatMessageProps) {
   const isUser = message.role === 'user'
 
   return (
-    <div className={cn('flex gap-2 animate-msg-enter', isUser ? 'flex-row-reverse' : 'flex-row')}>
+    <div className={cn('flex gap-2 animate-msg-enter', isUser ? 'flex-row-reverse' : 'flex-row')} style={{ animationDelay: `${index * 0.05}s` }}>
       {!isUser && (
         <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
           {personaName[0]}

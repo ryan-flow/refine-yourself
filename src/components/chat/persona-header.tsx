@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import type { PersonaProfile } from '@/types/persona'
 
@@ -21,7 +22,7 @@ export function PersonaHeader({ name, bio, profile }: PersonaHeaderProps) {
           href="/"
           className="flex size-8 items-center justify-center rounded-full hover:bg-muted transition-colors text-sm"
         >
-          ←
+          <ChevronLeft className="size-4" />
         </Link>
         <div
           className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"

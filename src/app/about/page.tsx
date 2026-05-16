@@ -21,7 +21,7 @@ export default function AboutPage() {
       </div>
 
       {/* 使用步骤 */}
-      <Card>
+      <Card className="transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
         <CardHeader>
           <CardTitle className="text-base">如何使用</CardTitle>
         </CardHeader>
@@ -41,7 +41,7 @@ export default function AboutPage() {
       </Card>
 
       {/* 导出指南 */}
-      <Card>
+      <Card className="transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <BookOpen className="size-4 text-muted-foreground" />

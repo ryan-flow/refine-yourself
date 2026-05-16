@@ -65,7 +65,7 @@ export function UploadArea({ onFileSelect, disabled, currentFile }: UploadAreaPr
     <div className="space-y-3">
       <div
         className={cn(
-          'relative rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-300 cursor-pointer border-muted-foreground/20 hover:border-muted-foreground/40 hover:bg-muted/30',
+          'group relative rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-300 cursor-pointer border-muted-foreground/20 hover:border-muted-foreground/40 hover:bg-muted/30',
           isDragging && 'border-primary/50 bg-primary/[0.04] shadow-[0_0_32px_-4px_var(--primary)/8] scale-[1.01]',
           disabled && 'opacity-50 pointer-events-none',
         )}

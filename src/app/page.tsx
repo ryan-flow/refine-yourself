@@ -79,13 +79,18 @@ export default function HomePage() {
               disabled={false}
             />
             <Button
-              className="w-full"
+              className="w-full btn-press"
               size="lg"
               disabled={!file}
               onClick={handleSubmit}
             >
               开始炼化
             </Button>
+            {!file && (
+              <p className="text-xs text-center text-muted-foreground/60">
+                请先上传聊天记录文件
+              </p>
+            )}
           </div>
         )}
 

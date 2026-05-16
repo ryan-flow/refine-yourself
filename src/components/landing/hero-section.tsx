@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Sparkles, Users } from 'lucide-react'
+import { Sparkles, Users, ArrowRight } from 'lucide-react'
 
 export function HeroSection() {
   return (
@@ -23,6 +23,7 @@ export function HeroSection() {
           <Button variant="outline" size="sm" className="group">
             <Users className="size-3.5 mr-1" />
             试玩现成角色
+            <ArrowRight className="size-3.5 ml-1 transition-transform group-hover:translate-x-0.5" />
           </Button>
         </Link>
         <span className="text-xs text-muted-foreground">或</span>

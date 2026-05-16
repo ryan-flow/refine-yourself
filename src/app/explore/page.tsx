@@ -38,10 +38,10 @@ export default function ExplorePage() {
             <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             <CardHeader className="pb-3">
-              <span className="text-3xl" role="img" aria-label={p.name}>
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-bold">
                 {p.avatar}
-              </span>
-              <h2 className="text-lg font-semibold mt-2">{p.name}</h2>
+              </div>
+              <h2 className="text-lg font-semibold mt-3">{p.name}</h2>
               <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
                 {p.bio}
               </p>

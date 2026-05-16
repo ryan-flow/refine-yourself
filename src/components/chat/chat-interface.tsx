@@ -111,11 +111,12 @@ export function ChatInterface({ persona }: ChatInterfaceProps) {
           <EmptyState personaName={persona.name} />
         ) : (
           <div className="flex-1 space-y-3 px-4 py-4">
-            {messages.map((msg) => (
+            {messages.map((msg, i) => (
               <ChatMessageBubble
                 key={msg.id}
                 message={msg}
                 personaName={persona.name}
+                index={i}
               />
             ))}
           </div>

@@ -111,7 +111,7 @@ export function ChatInterface({ persona }: ChatInterfaceProps) {
   )
 
   // 对话样本：优先用真实对话，否则用人设样本
-  const profile = persona.persona_profile as Record<string, unknown> | null
+  const profile = persona.persona_profile
   const presetSamples = (profile?.conversation_samples || profile?.samples || []) as { q: string; a: string }[]
   const chatSamples = messages.length >= 2
     ? messages.filter(m => m.role === 'user').slice(0, 2).map(m => {

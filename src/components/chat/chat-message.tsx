@@ -24,7 +24,7 @@ export function ChatMessageBubble({ message, personaName }: ChatMessageProps) {
   const isUser = message.role === 'user'
 
   return (
-    <div className={cn('flex gap-2', isUser ? 'flex-row-reverse' : 'flex-row')}>
+    <div className={cn('flex gap-2 animate-msg-enter', isUser ? 'flex-row-reverse' : 'flex-row')}>
       {!isUser && (
         <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
           {personaName[0]}
@@ -34,7 +34,7 @@ export function ChatMessageBubble({ message, personaName }: ChatMessageProps) {
       <div className={cn('flex flex-col max-w-[80%] sm:max-w-[70%]', isUser ? 'items-end' : 'items-start')}>
         <div
           className={cn(
-            'rounded-2xl px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words',
+            'rounded-2xl px-3.5 py-2 text-[15px] leading-relaxed whitespace-pre-wrap break-words',
             isUser
               ? 'bg-primary text-primary-foreground rounded-tr-sm'
               : 'bg-muted rounded-tl-sm',

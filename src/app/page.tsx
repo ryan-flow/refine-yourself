@@ -6,7 +6,7 @@ import { UploadArea } from '@/components/landing/upload-area'
 import { NameInput } from '@/components/landing/name-input'
 import { ProcessingState } from '@/components/landing/processing-state'
 import { PersonaResult } from '@/components/landing/persona-result'
-import { ShareResult } from '@/components/landing/share-result'
+import { PrebuiltGrid } from '@/components/landing/prebuilt-grid'
 import { Button } from '@/components/ui/button'
 import { Toaster, toast } from 'sonner'
 import type { CreatePersonaResponse } from '@/types/api'
@@ -63,8 +63,25 @@ export default function HomePage() {
 
   return (
     <>
-      <main className="mx-auto flex max-w-lg flex-1 flex-col px-4 py-6 animate-page-enter">
+      <main className="mx-auto flex max-w-lg flex-1 flex-col px-4 py-6 animate-page-enter relative">
+        {/* 背景氛围光斑 */}
+        <div className="ambient-blob -top-40 -left-20 w-72 h-72" style={{ background: 'var(--primary)' }} />
+        <div className="ambient-blob -bottom-20 -right-20 w-80 h-80" style={{ background: 'var(--primary)', animationDelay: '-10s', animationDuration: '24s' }} />
+
         <HeroSection />
+
+        {/* 角色对话广场 */}
+        <section className="space-y-3">
+          <p className="text-xs text-muted-foreground/60 text-center">选一个角色，立刻开始对话</p>
+          <PrebuiltGrid />
+        </section>
+
+        {/* 分割线 + 上传区 */}
+        <div className="mt-10 mb-6 flex items-center gap-3">
+          <div className="flex-1 h-px bg-border/50" />
+          <span className="text-xs text-muted-foreground/50 shrink-0">或者，炼化你自己</span>
+          <div className="flex-1 h-px bg-border/50" />
+        </div>
 
         {(state === 'idle' || state === 'error') && (
           <div className="mt-4 space-y-4">

@@ -86,6 +86,24 @@ const themes: Record<string, Theme> = {
     subColor: 'rgba(242,247,242,0.7)',
     brandColor: 'rgba(122,184,122,0.5)',
   },
+  poet: {
+    name: 'poet',
+    bgGradient: ['#0a0e1a', '#1a1530'],
+    accent: '#c0c8e8',
+    icon: '🌙',
+    textColor: '#f0f0f8',
+    subColor: 'rgba(240,240,248,0.7)',
+    brandColor: 'rgba(192,200,232,0.5)',
+  },
+  mythic: {
+    name: 'mythic',
+    bgGradient: ['#1a0800', '#3d1200'],
+    accent: '#f0a030',
+    icon: '🔥',
+    textColor: '#fff5e8',
+    subColor: 'rgba(255,245,232,0.7)',
+    brandColor: 'rgba(240,160,48,0.5)',
+  },
 }
 
 const defaultTheme: Theme = {

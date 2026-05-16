@@ -13,6 +13,10 @@ const personaTheme: Record<string, string> = {
   taylor: 'artistic',
   zhugeliang: 'ancient',
   miyazaki: 'nature',
+  libai: 'poet',
+  wukong: 'mythic',
+  luxun: 'scholar',
+  curie: 'classic',
 }
 
 function buildOgImageUrl(name: string, bio: string, theme: string): string {

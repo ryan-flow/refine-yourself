@@ -31,7 +31,7 @@ export default async function PrebuiltChatPage({
   }
 
   return (
-    <main className="flex flex-1 flex-col h-[calc(100vh-3.5rem)] max-w-2xl mx-auto w-full border-x">
+    <main className="flex flex-1 flex-col h-[calc(100dvh-3.5rem)] max-w-2xl mx-auto w-full border-x animate-page-enter">
       <ChatInterface persona={persona} />
     </main>
   )

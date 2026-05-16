@@ -63,7 +63,7 @@ export default function HomePage() {
 
   return (
     <>
-      <main className="mx-auto flex max-w-lg flex-1 flex-col px-4 py-6">
+      <main className="mx-auto flex max-w-lg flex-1 flex-col px-4 py-6 animate-page-enter">
         <HeroSection />
 
         {(state === 'idle' || state === 'error') && (

@@ -1,7 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
-import Link from 'next/link'
+import { useRef, useState } from 'react'
 import { prebuiltPersonas } from '@/data/prebuilt-personas'
 import { MessageCircle } from 'lucide-react'
 
@@ -35,7 +34,15 @@ const personaQuote: Record<string, string> = {
   curie: '「科学发现属于全人类」',
 }
 
-function PersonaCard({ persona, index }: { persona: typeof prebuiltPersonas[number]; index: number }) {
+interface PrebuiltGridProps {
+  onSelect: (slug: string) => void
+}
+
+function PersonaCard({ persona, index, onSelect }: {
+  persona: typeof prebuiltPersonas[number]
+  index: number
+  onSelect: (slug: string) => void
+}) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [glowPos, setGlowPos] = useState({ x: 0.5, y: 0.5 })
   const [isHovered, setIsHovered] = useState(false)
@@ -52,7 +59,10 @@ function PersonaCard({ persona, index }: { persona: typeof prebuiltPersonas[numb
   }
 
   return (
-    <Link href={`/chat/prebuilt/${persona.slug}`}>
+    <button
+      className="w-full text-left"
+      onClick={() => onSelect(persona.slug)}
+    >
       <div
         ref={cardRef}
         className="group relative rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-4 cursor-pointer transition-all duration-300 hover:-translate-y-1 overflow-hidden animate-card-in"
@@ -90,18 +100,18 @@ function PersonaCard({ persona, index }: { persona: typeof prebuiltPersonas[numb
             </div>
             <div className="min-w-0">
               <p className="text-[15px] font-semibold truncate">{persona.name}</p>
-              <p className="text-[11px] text-muted-foreground/60 line-clamp-1">
+              <p className="text-[11px] text-muted-foreground/60 truncate">
                 {personaQuote[persona.slug] || persona.bio.slice(0, 16)}
               </p>
             </div>
           </div>
 
-          {/* 标签 */}
-          <div className="flex flex-wrap gap-1">
+          {/* 标签 — 单行截断 */}
+          <div className="flex gap-1 overflow-hidden">
             {persona.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="inline-block px-2 py-0.5 rounded-md text-[10px] font-medium"
+                className="inline-block px-2 py-0.5 rounded-md text-[10px] font-medium shrink-0"
                 style={{ background: `${accent}10`, color: accent }}
               >
                 {tag}
@@ -122,15 +132,20 @@ function PersonaCard({ persona, index }: { persona: typeof prebuiltPersonas[numb
           </div>
         </div>
       </div>
-    </Link>
+    </button>
   )
 }
 
-export function PrebuiltGrid() {
+export function PrebuiltGrid({ onSelect }: PrebuiltGridProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {prebuiltPersonas.map((persona, i) => (
-        <PersonaCard key={persona.slug} persona={persona} index={i} />
+        <PersonaCard
+          key={persona.slug}
+          persona={persona}
+          index={i}
+          onSelect={onSelect}
+        />
       ))}
     </div>
   )

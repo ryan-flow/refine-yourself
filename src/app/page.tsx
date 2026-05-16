@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { HeroSection } from '@/components/landing/hero-section'
 import { UploadArea } from '@/components/landing/upload-area'
 import { NameInput } from '@/components/landing/name-input'
@@ -8,9 +8,13 @@ import { ProcessingState } from '@/components/landing/processing-state'
 import { PersonaResult } from '@/components/landing/persona-result'
 import { ShareResult } from '@/components/landing/share-result'
 import { PrebuiltGrid } from '@/components/landing/prebuilt-grid'
+import { ChatInterface } from '@/components/chat/chat-interface'
+import { getPrebuiltPersona } from '@/data/prebuilt-personas'
 import { Button } from '@/components/ui/button'
 import { Toaster, toast } from 'sonner'
+import { ChevronLeft } from 'lucide-react'
 import type { CreatePersonaResponse } from '@/types/api'
+import type { Persona } from '@/types/persona'
 
 type PageState = 'idle' | 'uploading' | 'success' | 'error'
 
@@ -19,6 +23,7 @@ export default function HomePage() {
   const [file, setFile] = useState<File | null>(null)
   const [personaName, setPersonaName] = useState('')
   const [result, setResult] = useState<CreatePersonaResponse | null>(null)
+  const [chatSlug, setChatSlug] = useState<string | null>(null)
 
   const handleFileSelect = useCallback((f: File) => {
     setFile(f)
@@ -62,6 +67,41 @@ export default function HomePage() {
     setState('idle')
   }, [])
 
+  const activePersona = useMemo(() => {
+    if (!chatSlug) return null
+    const data = getPrebuiltPersona(chatSlug)
+    if (!data) return null
+    return {
+      id: `prebuilt-${data.slug}`,
+      name: data.name,
+      bio: data.bio,
+      persona_profile: data.profile,
+      created_at: new Date().toISOString(),
+      chat_count: 0,
+    } as Persona
+  }, [chatSlug])
+
+  // ── 聊天模式 ──
+  if (activePersona) {
+    return (
+      <>
+        <main className="flex flex-1 flex-col h-[calc(100dvh-3.5rem)] max-w-2xl mx-auto w-full sm:border-x border-border/30 animate-page-enter">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-border/30 bg-background/80 backdrop-blur-sm">
+            <button
+              onClick={() => setChatSlug(null)}
+              className="flex size-8 items-center justify-center rounded-full hover:bg-muted transition-colors text-muted-foreground"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            <span className="text-sm font-medium">{activePersona.name}</span>
+          </div>
+          <ChatInterface persona={activePersona} />
+        </main>
+        <Toaster position="top-center" richColors />
+      </>
+    )
+  }
+
   return (
     <>
       <main className="mx-auto flex max-w-lg flex-1 flex-col px-4 py-6 animate-page-enter relative">
@@ -74,7 +114,7 @@ export default function HomePage() {
         {/* 角色对话广场 */}
         <section className="space-y-3">
           <p className="text-xs text-muted-foreground/60 text-center">选一个角色，立刻开始对话</p>
-          <PrebuiltGrid />
+          <PrebuiltGrid onSelect={setChatSlug} />
         </section>
 
         {/* 分割线 + 上传区 */}

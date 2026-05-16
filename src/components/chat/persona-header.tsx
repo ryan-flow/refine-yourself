@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Share2, Check } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import type { PersonaProfile } from '@/types/persona'
 
@@ -14,6 +14,15 @@ interface PersonaHeaderProps {
 
 export function PersonaHeader({ name, bio, profile }: PersonaHeaderProps) {
   const [showDetails, setShowDetails] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const handleShare = useCallback(() => {
+    const url = window.location.href
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }, [])
 
   return (
     <div className="border-b bg-background">
@@ -38,6 +47,18 @@ export function PersonaHeader({ name, bio, profile }: PersonaHeaderProps) {
             )}
           </div>
         </div>
+
+        {/* Share button */}
+        <button
+          onClick={handleShare}
+          className="flex size-8 items-center justify-center rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+        >
+          {copied ? (
+            <Check className="size-4 text-green-500" />
+          ) : (
+            <Share2 className="size-4" />
+          )}
+        </button>
       </div>
 
       {showDetails && (

@@ -104,7 +104,7 @@ export default function HomePage() {
 
   return (
     <>
-      <main className="mx-auto flex max-w-lg flex-1 flex-col px-4 py-6 animate-page-enter relative">
+      <main className="mx-auto flex max-w-lg flex-1 flex-col px-4 py-6 animate-page-enter relative bg-mesh-gradient">
         {/* 背景氛围光斑 */}
         <div className="ambient-blob -top-40 -left-20 w-72 h-72" style={{ background: 'var(--primary)' }} />
         <div className="ambient-blob -bottom-20 -right-20 w-80 h-80" style={{ background: 'var(--primary)', animationDelay: '-10s', animationDuration: '24s' }} />

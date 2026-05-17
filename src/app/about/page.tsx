@@ -11,7 +11,7 @@ const steps = [
 
 export default function AboutPage() {
   return (
-    <main className="mx-auto max-w-prose flex-1 px-4 py-10 space-y-8 animate-page-enter">
+    <main className="mx-auto max-w-prose flex-1 px-4 py-10 space-y-8 animate-page-enter bg-mesh-gradient">
       <div className="text-center space-y-3">
         <div className="mx-auto h-px w-12 bg-gradient-to-r from-transparent via-primary/30 to-transparent mb-4" />
         <h1 className="text-2xl font-bold tracking-tight">关于 炼化自己</h1>

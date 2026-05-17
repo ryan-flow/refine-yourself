@@ -25,7 +25,7 @@ export function ProcessingState({ personaName }: ProcessingStateProps) {
   }, [])
 
   return (
-    <div className="space-y-2 py-10">
+    <div className="space-y-2 py-10 relative overflow-hidden rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-6 animate-card-in">
       {/* 进度线 + 步骤 */}
       <div className="relative space-y-0">
         {/* 竖线 */}

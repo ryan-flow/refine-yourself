@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase/server'
+import { dbQueryOne, dbQuery } from '@/lib/db'
 import { callDeepSeek } from '@/lib/deepseek/client'
 import { buildChatMessages } from '@/lib/deepseek/chat-prompt'
 import { normalizeProfile } from '@/types/persona'
 import type { PersonaProfile } from '@/types/persona'
+
+interface PersonaRow {
+  id: string
+  name: string
+  bio: string
+  persona_profile: PersonaProfile
+  chat_count: number
+}
 
 export async function POST(
   request: NextRequest,
@@ -22,13 +30,13 @@ export async function POST(
       )
     }
 
-    const { data: persona, error } = await supabaseAdmin
-      .from('personas')
-      .select('*')
-      .eq('id', id)
-      .single()
+    const persona = await dbQueryOne<PersonaRow>(
+      `SELECT id, name, bio, persona_profile, chat_count
+       FROM personas WHERE id = $1`,
+      [id],
+    )
 
-    if (error || !persona) {
+    if (!persona) {
       return NextResponse.json(
         { ok: false, error: '人格不存在' },
         { status: 404 },
@@ -47,10 +55,8 @@ export async function POST(
       max_tokens: 1024,
     })
 
-    void supabaseAdmin
-      .from('personas')
-      .update({ chat_count: (persona.chat_count ?? 0) + 1 })
-      .eq('id', id)
+    // Fire-and-forget: increment chat count
+    dbQuery(`UPDATE personas SET chat_count = chat_count + 1 WHERE id = $1`, [id]).catch(() => {})
 
     return NextResponse.json({ ok: true, data: { reply } })
   } catch (err) {

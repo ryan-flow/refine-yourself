@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase/server'
+import { dbQueryOne, dbQuery } from '@/lib/db'
+
+interface PersonaRow {
+  id: string
+  name: string
+  bio: string
+  persona_profile: Record<string, unknown>
+  admin_token: string
+  created_at: string
+  chat_count: number
+}
 
 export async function GET(
   _request: NextRequest,
@@ -7,13 +17,13 @@ export async function GET(
 ) {
   const { id } = await params
 
-  const { data, error } = await supabaseAdmin
-    .from('personas')
-    .select('id, name, bio, persona_profile, created_at, chat_count')
-    .eq('id', id)
-    .single()
+  const data = await dbQueryOne<PersonaRow>(
+    `SELECT id, name, bio, persona_profile, created_at, chat_count
+     FROM personas WHERE id = $1`,
+    [id],
+  )
 
-  if (error || !data) {
+  if (!data) {
     return NextResponse.json(
       { ok: false, error: '人格不存在' },
       { status: 404 },
@@ -37,11 +47,10 @@ export async function DELETE(
     )
   }
 
-  const { data: persona } = await supabaseAdmin
-    .from('personas')
-    .select('admin_token')
-    .eq('id', id)
-    .single()
+  const persona = await dbQueryOne<{ admin_token: string }>(
+    `SELECT admin_token FROM personas WHERE id = $1`,
+    [id],
+  )
 
   if (!persona) {
     return NextResponse.json(
@@ -57,14 +66,7 @@ export async function DELETE(
     )
   }
 
-  const { error } = await supabaseAdmin
-    .from('personas')
-    .delete()
-    .eq('id', id)
-
-  if (error) {
-    throw new Error(error.message)
-  }
+  await dbQuery(`DELETE FROM personas WHERE id = $1`, [id])
 
   return NextResponse.json({ ok: true, data: null })
 }

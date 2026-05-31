@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase/server'
+import { dbQuery, dbQueryOne } from '@/lib/db'
 import { callDeepSeek } from '@/lib/deepseek/client'
 import { buildPersonaExtractionPrompt } from '@/lib/deepseek/persona-prompt'
 import { validateChatFile } from '@/lib/validators'
 import type { PersonaProfile } from '@/types/persona'
+
+interface PersonaRow {
+  id: string
+  name: string
+  bio: string
+  persona_profile: PersonaProfile
+  admin_token: string
+  created_at: string
+  chat_count: number
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -57,7 +67,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 构建完整的 PersonaProfile（五层结构 + 遗留字段兼容）
     const identity = (extracted.identity as string) || ''
     const rules = (extracted.rules as string[]) || []
     const expressionStyle = (extracted.expression_style as string) || ''
@@ -70,7 +79,6 @@ export async function POST(request: NextRequest) {
       expression_style: expressionStyle,
       decision_patterns: decisionPatterns,
       conversation_samples: conversationSamples,
-      // 向后兼容字段
       tone: identity.split('。')[0] || '未知',
       vocabulary_level: expressionStyle.includes('白话') ? '口语化' : expressionStyle.includes('书面') ? '书面化' : '日常',
       common_phrases: [],
@@ -87,33 +95,30 @@ export async function POST(request: NextRequest) {
       ? `${identity.split('。')[0]}。性格特征：${traits}。`
       : ''
 
-    const { data, error } = await supabaseAdmin
-      .from('personas')
-      .insert({
-        name: finalName,
-        bio,
-        persona_profile: profile,
-      })
-      .select('*')
-      .single()
+    const row = await dbQueryOne<PersonaRow>(
+      `INSERT INTO personas (name, bio, persona_profile)
+       VALUES ($1, $2, $3)
+       RETURNING id, name, bio, persona_profile, admin_token, created_at, chat_count`,
+      [finalName, bio, JSON.stringify(profile)],
+    )
 
-    if (error || !data) {
-      throw new Error(error?.message || 'Failed to save persona')
+    if (!row) {
+      throw new Error('Failed to save persona')
     }
 
-    const shareUrl = `${process.env.NEXT_PUBLIC_BASE_URL || request.nextUrl.origin}/chat/${data.id}`
+    const shareUrl = `${process.env.NEXT_PUBLIC_BASE_URL || request.nextUrl.origin}/chat/${row.id}`
 
     return NextResponse.json({
       ok: true,
       data: {
         persona: {
-          id: data.id,
-          name: data.name,
-          bio: data.bio,
-          persona_profile: data.persona_profile,
-          admin_token: data.admin_token,
-          created_at: data.created_at,
-          chat_count: data.chat_count,
+          id: row.id,
+          name: row.name,
+          bio: row.bio,
+          persona_profile: row.persona_profile,
+          admin_token: row.admin_token,
+          created_at: row.created_at,
+          chat_count: row.chat_count,
         },
         shareUrl,
       },

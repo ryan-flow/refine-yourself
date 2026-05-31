@@ -1,7 +1,17 @@
-import { supabaseAdmin } from '@/lib/supabase/server'
+import { dbQueryOne } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { ChatInterface } from '@/components/chat/chat-interface'
 import type { Metadata } from 'next'
+import type { Persona } from '@/types/persona'
+
+interface PersonaRow {
+  id: string
+  name: string
+  bio: string
+  persona_profile: Record<string, unknown>
+  created_at: string
+  chat_count: number
+}
 
 function buildOgImageUrl(name: string, bio: string, theme: string): string {
   const params = new URLSearchParams({ name, bio, theme })
@@ -17,15 +27,12 @@ export async function generateMetadata({
   const { id } = await params
 
   try {
-    const { data: persona } = await supabaseAdmin
-      .from('personas')
-      .select('name, bio, persona_profile')
-      .eq('id', id)
-      .single()
+    const persona = await dbQueryOne<PersonaRow>(
+      `SELECT name, bio, persona_profile FROM personas WHERE id = $1`,
+      [id],
+    )
 
     if (!persona) return { title: '分身不存在' }
-
-    const profile = persona.persona_profile as Record<string, unknown> | null
 
     const ogImage = buildOgImageUrl(persona.name, persona.bio || '', 'default')
 
@@ -57,11 +64,11 @@ export default async function ChatPage({
 }) {
   const { id } = await params
 
-  const { data: persona } = await supabaseAdmin
-    .from('personas')
-    .select('id, name, bio, persona_profile, created_at, chat_count')
-    .eq('id', id)
-    .single()
+  const persona = await dbQueryOne<PersonaRow>(
+    `SELECT id, name, bio, persona_profile, created_at, chat_count
+     FROM personas WHERE id = $1`,
+    [id],
+  )
 
   if (!persona) {
     notFound()
@@ -69,7 +76,7 @@ export default async function ChatPage({
 
   return (
     <main className="flex flex-1 flex-col h-[calc(100dvh-3.5rem)] max-w-2xl mx-auto w-full border-x animate-page-enter">
-      <ChatInterface persona={persona as import('@/types/persona').Persona} />
+      <ChatInterface persona={persona as Persona} />
     </main>
   )
 }

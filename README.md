@@ -4,7 +4,7 @@
 
 上传微信 / WhatsApp / Telegram 聊天记录，AI 自动分析语言风格、语气和用词习惯，生成人格画像。分享链接，任何人都可以与你的数字分身对话。
 
-🌐 **在线体验：** [refine-yourself.vercel.app](https://refine-yourself.vercel.app)
+🌐 **在线体验：** [refine.ryanflow.cloud](https://refine.ryanflow.cloud)
 
 ---
 
